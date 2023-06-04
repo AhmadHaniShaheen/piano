@@ -15,7 +15,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String selectedMenu = "guitars";
+  String? selectedMenu = "expressive";
 
   @override
   void initState() {
@@ -27,48 +27,44 @@ class _MyAppState extends State<MyApp> {
     FlutterMidi().unmute();
     // ignore: no_leading_underscores_for_local_identifiers
     ByteData _byte = await rootBundle.load(asset);
-    FlutterMidi().prepare(sf2: _byte);
+    FlutterMidi().prepare(
+        sf2: _byte, name: "assets/$selectedMenu.sf2".replaceAll('assets/', ''));
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Piano Demo',
         home: Scaffold(
           appBar: AppBar(
             centerTitle: true,
             title: const Text('Piano Demo'),
             actions: [
-              PopupMenuButton<String>(
-                initialValue: selectedMenu,
-                // Callback that sets the selected popup menu item.
-                onSelected: (String item) {
-                  setState(() {
-                    selectedMenu = item;
-                  });
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  PopupMenuItem<String>(
-                    value: "guitars",
-                    child: const Text('guitars'),
-                    onTap: () {
-                      setState(() {
-                        selectedMenu = "guitars";
-                      });
-                    },
-                  ),
-                  PopupMenuItem<String>(
-                    value: "expressive",
-                    child: const Text('expressive'),
-                    onTap: () {
-                      setState(() {
-                        selectedMenu = "expressive";
-                      });
-                    },
-                  ),
-                ],
-              ),
+              DropdownButton(
+                  value: selectedMenu ?? "expressive",
+                  style: const TextStyle(
+                      color: Color.fromARGB(255, 90, 89, 89), fontSize: 16),
+                  iconEnabledColor: Colors.white,
+                  items: const [
+                    DropdownMenuItem(
+                      value: "expressive",
+                      child: Text('expressive'),
+                    ),
+                    DropdownMenuItem(
+                      value: "guitars",
+                      child: Text('guitars'),
+                    ),
+                    DropdownMenuItem(
+                      value: "yamaha-Grand",
+                      child: Text('Piano'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      selectedMenu = value;
+                    });
+                    load("assets/$value.sf2");
+                  })
             ],
           ),
           body: Center(
@@ -81,7 +77,7 @@ class _MyAppState extends State<MyApp> {
                 Clef.Treble,
               ]),
               onNotePositionTapped: (position) {
-                FlutterMidi().playMidiNote(midi: 50);
+                FlutterMidi().playMidiNote(midi: position.pitch);
                 FlutterMidi().stopMidiNote(midi: 60);
               },
             ),
