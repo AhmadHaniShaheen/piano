@@ -38,9 +38,9 @@ class _MyAppState extends State<MyApp> {
         home: Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: const Text('Piano Demo'),
-            actions: [
-              DropdownButton(
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 24.0),
+              child: DropdownButton(
                   value: selectedMenu ?? "expressive",
                   style: const TextStyle(
                       color: Color.fromARGB(255, 90, 89, 89), fontSize: 16),
@@ -64,8 +64,10 @@ class _MyAppState extends State<MyApp> {
                       selectedMenu = value;
                     });
                     load("assets/$value.sf2");
-                  })
-            ],
+                  }),
+            ),
+            leadingWidth: 124,
+            title: const Text('Piano Demo'),
           ),
           body: Center(
             child: InteractivePiano(
